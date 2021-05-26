@@ -17,7 +17,7 @@ function h(tag, props, children) {
 }
 
 //vdom => dom
-function mountElement(vnode, rootContainer) {
+function mountElement(vnode, container) {
   const { tag, props, children } = vnode;
   //tag
   const el = (vnode.el = document.createElement(tag));
@@ -33,40 +33,40 @@ function mountElement(vnode, rootContainer) {
   if (typeof children === "string") {
     const textNode = document.createTextNode(children);
     el.append(textNode);
-  } else if (Array.isArray(children)) {
+  } else {
     children.forEach((child) => {
       mountElement(child, el);
     });
   }
 
-  rootContainer.append(el);
+  container.append(el);
 }
 
-//diff
-function diff(n1, n2) {
+//patch
+function patch(n1, n2) {
+  console.log("patch");
   // 1.tag
   if (n1.tag !== n2.tag) {
     n1.el.replaceWith(document.createElement(n2.tag));
   } else {
-    //细节
+    //细节!!!
     const el = (n2.el = n1.el);
-
     // 2.props
-    const { props: oldProps } = n1;
-    const { props: newProps } = n2;
+    const oldProps = n1.props || {};
+    const newProps = n2.props || {};
     if (oldProps && newProps) {
       Object.keys(newProps).forEach((key) => {
         const newVal = newProps[key];
         const oldVal = oldProps[key];
         if (newVal !== oldVal) {
-          n1.el.setAttribute(key, newVal);
+          el.setAttribute(key, newVal);
         }
       });
     }
     if (oldProps) {
       Object.keys(oldProps).forEach((key) => {
         if (!newProps[key]) {
-          n1.el.removeAttribute(key);
+          el.removeAttribute(key);
         }
       });
     }
@@ -92,16 +92,20 @@ function diff(n1, n2) {
         //处理公共的部分
         const length = Math.min(oldChildren.length, newChildren.length);
         for (let i = 0; i < length; i++) {
-          diff(oldChildren[i], newChildren[i]);
+          patch(oldChildren[i], newChildren[i]);
         }
+        //新的长
         if (newChildren.length > length) {
-          for (let i = length; i < newChildren.length; i++) {
-            mountElement(newChildren[i]);
-          }
+          newChildren.slice(oldChildren.length).forEach((child) => {
+            mountElement(child, el);
+          });
+
+          //老的长
         } else if (oldChildren.length > length) {
           for (let i = length; i < oldChildren.length; i++) {
-            const oldVnode = oldChildren[index];
-            oldVnode.el.parent.remove(oldVnode.el);
+            oldChildren.slice(newChildren.length).forEach((child) => {
+              el.removeChild(child.el);
+            });
           }
         }
       }
@@ -117,8 +121,8 @@ function createApp(rootComponent) {
       let preSubTree;
 
       effectWatch(() => {
-        rootContainer.innerHTML = "";
         if (!isMounted) {
+          rootContainer.innerHTML = "";
           isMounted = true;
           const subTree = rootComponent.render(context);
           mountElement(subTree, rootContainer);
@@ -126,7 +130,7 @@ function createApp(rootComponent) {
         } else {
           //update
           const subTree = rootComponent.render(context);
-          diff(preSubTree, subTree);
+          patch(preSubTree, subTree);
           preSubTree = subTree;
         }
       });
@@ -136,14 +140,10 @@ function createApp(rootComponent) {
 
 const App = {
   render(context) {
-    return h(
-      "div",
-      { id: "123", style: "color:red", value: "v:" + context.state.value },
-      [
-        h("p", null, String(context.state.value)),
-        h("div", { style: "color:blue" }, String(context.state.value * 2)),
-      ]
-    );
+    return h("div", { id: "main", style: "color:red" }, [
+      h("p", null, String(context.state.value)),
+      h("div", { style: "color:blue" }, String(context.state.value * 2)),
+    ]);
   },
   setup() {
     const state = reactive({
@@ -154,4 +154,16 @@ const App = {
   },
 };
 
+//完整测试
 createApp(App).mount(document.getElementById("app"));
+
+
+
+//patch test
+const vdom = h("div", { class: "red" }, [h("span", null, "hello")]);
+mountElement(vdom, document.getElementById("app"));
+
+const vdom2 = h("div", { class: "green" }, [h("span", null, "changed!")]);
+setTimeout(() => {
+  patch(vdom, vdom2);
+},3000);
