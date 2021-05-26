@@ -3,7 +3,7 @@
  * @Author: zhaodacheng5
  * @Date: 2021-05-26 12:26:11
  * @LastEditors: zhaodacheng5
- * @LastEditTime: 2021-05-26 13:50:52
+ * @LastEditTime: 2021-05-26 14:43:36
  */
 
 
@@ -59,4 +59,4 @@ effectWatch(() => {
   console.log("change:"+b);
 });
 
-// dep.value = 20;
+dep.value = 20;

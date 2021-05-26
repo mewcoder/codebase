@@ -3,7 +3,7 @@
  * @Author: zhaodacheng5
  * @Date: 2021-05-26 12:26:11
  * @LastEditors: zhaodacheng5
- * @LastEditTime: 2021-05-26 13:54:26
+ * @LastEditTime: 2021-05-26 18:46:45
  */
 
 class Dep {
@@ -79,3 +79,5 @@ effectWatch(() => {
 });
 
 a.value = 20;
+
+export { reactive, effectWatch };
