@@ -11,7 +11,6 @@
 
 <script lang="ts">
 import { defineComponent, onUnmounted } from 'vue'
-// 使用mitt事件监听器
 import mitt from 'mitt'
 type ValidateFunc = () => boolean
 export const emitter = mitt()
@@ -20,10 +19,12 @@ export default defineComponent({
   setup(props, context) {
     let funcArr: ValidateFunc[] = []
     const submitForm = () => {
+      console.log('submit')
       const result = funcArr.map(func => func()).every(result => result)
       context.emit('form-submit', result)
     }
     const callback = (func?: ValidateFunc) => {
+      console.log('callback')
       if (func) {
         funcArr.push(func)
       }
