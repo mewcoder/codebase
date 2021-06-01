@@ -1,3 +1,10 @@
+<!--
+ * @Description: 
+ * @Author: zhaodacheng5
+ * @Date: 2021-05-31 09:43:06
+ * @LastEditors: zhaodacheng5
+ * @LastEditTime: 2021-05-31 10:29:52
+-->
 <template>
   <div id="app">
     <h1>开课吧 - Vue3</h1>
