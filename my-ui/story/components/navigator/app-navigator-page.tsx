@@ -11,7 +11,7 @@ export const AppNavigatorPage = defineComponent({
         const navigator = injectAppNavigator()
 
         const utils = {
-            reset: async () => {
+            reset: async () => {  
                 let {path} = navigator.state.route
                 if (!path) {
                     return
