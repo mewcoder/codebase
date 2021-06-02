@@ -57,6 +57,7 @@ export default {
 <style lang="scss">
 html,
 body {
+  // font-family: "Microsoft YaHei", 微软雅黑;
   margin: 0;
   padding: 0;
 }
@@ -83,7 +84,7 @@ body {
     position: fixed;
     left: 0;
     bottom: 0;
-    border-right: solid 2px rgba(0, 0, 0, 0.1);
+    border-right: solid 1px rgba(0, 0, 0, 0.1);
     // background-color: white;
   }
 
@@ -92,9 +93,9 @@ body {
     right: 0;
     bottom: 0;
     overflow-y: auto;
-    // background-color: red;
+    background-color: #f4f4f4;
     // min-height: 100vh;
-    margin: 16px;
+    padding: 16px;
     box-sizing: border-box;
   }
 }

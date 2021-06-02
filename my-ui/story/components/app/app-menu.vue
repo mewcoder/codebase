@@ -13,13 +13,16 @@
         v-for="menu in menuGroup.children"
         :key="menu.title"
         @click="handleClickMenu(menu)"
-        :class="{ 'app-menu-active': currentPath === menu.page }"
       >
-        <div class="app-menu-name">
+        <div
+          class="app-menu-name"
+          :class="{ 'app-menu-active': currentMenu === menu.page }"
+        >
           <span>{{ menu.name }}</span>
           <span>{{ menu.title }}</span>
         </div>
       </div>
+      <div class="menu-line" />
     </div>
   </div>
 </template>
@@ -27,26 +30,36 @@
 <script lang="ts">
 import { injectAppNavigator } from "../navigator/app-navigator";
 import { AppMenu, MENUS } from "./menu";
+import { ref } from "vue";
 
 export default {
   name: "app-menu",
   props: {
     currentPath: { type: String },
   },
-  setup() {
+  setup(props: any) {
+    const menus = MENUS;
     const navigator = injectAppNavigator();
-
+    const currentMenu = ref("");
+    function handleClickMenu(menu: AppMenu) {
+      navigator.methods.go(menu.page);
+      currentMenu.value = menu.page;
+    }
     return {
-      menus: MENUS,
-      handleClickMenu(menu: AppMenu) {
-        navigator.methods.go(menu.page);
-      },
+      menus,
+      currentMenu,
+      handleClickMenu,
     };
   },
 };
 </script>
 
 <style lang="scss">
+.menu-line {
+  margin: 10px;
+  background-color: #e0e0e0;
+  height: 0.5px;
+}
 .app-menu-list {
   height: 100%;
   overflow: auto;
@@ -67,15 +80,6 @@ export default {
       position: relative;
 
       & > span {
-        &:before {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          width: 4px;
-          background-color: #0f62fe;
-          content: "";
-        }
         &:nth-child(2) {
           font-size: 12px;
           margin-left: 0.5em;
@@ -91,25 +95,29 @@ export default {
     }
 
     .app-menu-group-name {
-      letter-spacing: 2px;
-      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 1px;
+      font-weight: 550;
       white-space: nowrap;
       padding: 10px 24px 12px 24px;
-      cursor: pointer;
+      color: #525252;
       &:hover {
         background-color: #e5e5e5;
       }
     }
   }
 
-  &:after {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: -30px;
-    width: 30px;
-    content: "";
-    box-shadow: inset 10px 0 8px -8px #f0f1f2;
+  .app-menu-active {
+    background-color: #e5e5e5;
+    &:before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 5px;
+      background-color: #0f62fe;
+      content: "";
+    }
   }
 }
 </style>
